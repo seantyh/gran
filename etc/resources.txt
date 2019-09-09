@@ -1,0 +1,8 @@
+as_chFreq.pickle
+as_wordFreq.pickle
+cwn_graph.pyobj
+deeplexicon_export_181209005320.json.gz
+dict-revised.json
+fluid_seg_lexicon.txt
+gensim_kv_fasttext_tc.pkl
+list.txt
