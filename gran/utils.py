@@ -12,3 +12,7 @@ def install_data_cache(name):
 def get_cache_path(name, path):
     cache_dir = Path(__file__).parent / f"../data/{name}"
     return cache_dir.joinpath(path).resolve()
+
+def get_resource_path(name, path):
+    cache_dir = Path(__file__).parent / f"../resource/{name}"
+    return cache_dir.joinpath(path).resolve()
