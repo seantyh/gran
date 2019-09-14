@@ -12,7 +12,7 @@ import gran
 import logging
 logging.basicConfig()
 
-def main(win, crit_freq, debug=False):
+def main(win, crit_freq, freq_only=True, debug=False):
     ngrams_index_url = "http://storage.googleapis.com/books/ngrams/books/datasetsv2.html"
     ngrams_index = requests.get(ngrams_index_url)
     ngrams_dom = BeautifulSoup(ngrams_index.text, 'lxml')
@@ -20,15 +20,17 @@ def main(win, crit_freq, debug=False):
 
     ng_links = find_links(ngrams_dom, f'{win}gram')
     if debug:
-        ng_links = [ng_links[int(len(ng_links)/2)]]
+        m = int(len(ng_links)/2)
+        ng_links = ng_links[m:m+3]
 
-    gram_data = gran.GoogleNgramData(ng_links, win)
+    gram_data = gran.GoogleNgramData(ng_links, crit_freq)
     gram_data.process()
     ng_prefix = ["", "uni", "bi", "tri", "quad", "penta"]
+    freq_suffix = ["freq", "ngdata"][int(freq_only)]
     if debug:
-        ng_path = gran.get_cache_path("lang_model", f"{ng_prefix[win]}_grams_debug.pkl")
+        ng_path = gran.get_cache_path("lang_model", f"{ng_prefix[win]}_grams_f{freq_suffix}_debug.pkl")
     else:
-        ng_path = gran.get_cache_path("lang_model", f"{ng_prefix[win]}_grams.pkl")
+        ng_path = gran.get_cache_path("lang_model", f"{ng_prefix[win]}_f{freq_suffix}_grams.pkl")
     gram_data.save(ng_path)
 
 def find_links(ngram_index, category):
@@ -43,7 +45,8 @@ if __name__ == "__main__":
     parser.add_argument("window", type=int)
     parser.add_argument("crit_freq", type=int)
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--freq-only", action="store_true")
     args = parser.parse_args()
 
-    main(args.window, args.crit_freq, args.debug)
+    main(args.window, args.crit_freq, args.freq_only, args.debug)
 
