@@ -1,42 +1,60 @@
-from typing import Dict, Tuple, List
+from collections import namedtuple
+from functools import reduce
+from typing import Dict, Tuple, List, Set
 
 Frequency = int
 Character = str
 
-class NGramBP:
-    def __init__(self, charac: str, index: int):
-        self.charac = charac
-        self.index = index
+NgTag = namedtuple("NgTag", ["charac", "offset"])
 
-class Node:
+class NgNode:
     def __init__(self, charac):
         self.charac: str = charac
-        self.freq_data: Dict[NGramBP, Frequency] = {}
+        self.tags: Set[NgTag] = set()
         self.bp_index = -1
 
-    def new_index(self):
-        self.bp_index += 1
-        return self.bp_index
+    def __repr__(self):
+        return f"<NgNode: {self.charac}, with {len(self.tags)} tags>"
 
-    def traceback(self, bp_key):
-        if bp_key not in self.freq_data:
-    
-    def __contains__(self, item):
-        return item in self.freq_data
+    def register(self, charac: str, offset: int):
+        tag = NgTag(charac, offset)
+        self.tags.add(tag)
 
-class NGramGraph:
-    def __init__(self):
-        self.nodes: Dict[str, Node] = {}
+class NgGraph:
+    def __init__(self, window_size = 3):
+        self.nodes: Dict[str, NgNode] = {}
+        self.win = window_size
     
     def instantiate_node(self, charac):
         if charac not in self.nodes:
-            self.nodes[charac] = Node(charac)
+            self.nodes[charac] = NgNode(charac)
         
         return self.nodes[charac]
 
-    def encode(self, ngram: str, freq: Frequency):
-        for gram_x in ngram[::-1]:
-            
+    def get_word_boundary_index(self, ngram):
+        tokens = ngram.split('|')
+        token_len = [len(x) for x in tokens]
+        token_delims = [0]
+        for len_x in token_len:
+            last_delim = token_delims[-1] + len_x
+            token_delims.append(last_delim)
+        token_delims = token_delims[1:-1]
+        return token_delims
+
+    def encode(self, ngram: str):
+        win = self.win
+        delims = self.get_word_boundary_index(ngram)
+        chseq = ngram.replace('|', '')
+        for base_i in range(len(chseq)):
+            base_ch = chseq[base_i]
+            base_node = self.instantiate_node(base_ch)
+            for offset_i in range(-win, win):
+                if offset_i == 0: continue
+                cur_idx = base_i + offset_i
+                if not (0 < cur_idx < len(chseq)):
+                    continue
+                ch_x = chseq[cur_idx]
+                base_node.register(ch_x, cur_idx)
 
     def decode(self, ngram: str):
         pass
