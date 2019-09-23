@@ -1,5 +1,5 @@
 import pytest
-from gran import NgNode, NgGraph
+from gran import NgNode, NgGraph, NgTag
 
 def test_node():
     node = NgNode("測")
@@ -20,10 +20,17 @@ def test_word_boudary():
 
 def test_add_ngram():
     graph = NgGraph()
-    ngram = "蘋果電腦"
+    ngram1 = "蘋果電腦"
+    ngram2 = "果粉表示"
     freq = 100
-    graph.encode(ngram)
+    graph.encode(ngram1)
+    graph.encode(ngram2)
     n1 = graph.instantiate_node('果')
     print(n1.tags)
-    # assert graph.decode(ngram)
+    assert NgTag("蘋", -1) in n1.tags
+    assert NgTag("電", 1) in n1.tags
+    assert NgTag("腦", 2) in n1.tags
+    assert NgTag("粉" ,1) in n1.tags
+    assert NgTag("表", 2) in n1.tags
+    assert NgTag("示", 3) in n1.tags 
     
