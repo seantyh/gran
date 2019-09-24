@@ -11,6 +11,13 @@ class NgTagSet:
     def __init__(self):
         self.tag_map = {}
 
+    def __len__(self):
+        return sum([len(x) for x in self.tag_map.values()])
+
+    @property
+    def n_charac(self):
+        return len(self.tag_map)
+
     def __contains__(self, item: NgTag):
         if isinstance(item, NgTag):
             charac = item.charac
@@ -35,8 +42,7 @@ class NgTagSet:
 class NgNode:
     def __init__(self, charac):
         self.charac: str = charac
-        self.tags: Set[NgTag] = set()
-        self.bp_index = -1
+        self.tags: NgTagSet = NgTagSet()
 
     def __repr__(self):
         return f"<NgNode: {self.charac}, with {len(self.tags)} tags>"
@@ -82,4 +88,24 @@ class NgGraph:
                 base_node.register(ch_x, offset_i)
 
     def decode(self, ngram: str):
-        pass
+        entry_node = self.nodes.get(ngram[0])
+        if not entry_node:
+            return False
+
+        if len(ngram) == 1:
+            return True
+
+        buf = [1]
+        while buf:
+            offset = buf.pop()
+            charac = ngram[offset]
+            
+            tag_x = NgTag(charac, offset)
+            hasTag = tag_x in entry_node.tags
+            if not hasTag:
+                return False
+            
+            if offset+1 < len(ngram):
+                buf.append(offset+1)
+        return True
+                

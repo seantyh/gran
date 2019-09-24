@@ -33,4 +33,21 @@ def test_add_ngram():
     assert NgTag("粉" ,1) in n1.tags
     assert NgTag("表", 2) in n1.tags
     assert NgTag("示", 3) in n1.tags 
+
+def test_decode_ngram():
+    graph = NgGraph()
+    ngram1 = "蘋果電腦"
+    ngram2 = "果粉表示"
+    freq = 100
+    graph.encode(ngram1)
+    graph.encode(ngram2)
+
+    assert graph.decode("果電腦") == True
+    assert graph.decode("蘋果電") == True
+    assert graph.decode("蘋果") == True
+    assert graph.decode("粉表") == True
+    assert graph.decode("果表示") == False
+    assert graph.decode("電腦示") == False
+    assert graph.decode("沒有人") == False
+
     

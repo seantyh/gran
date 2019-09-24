@@ -11,3 +11,5 @@ def test_ngTagSet():
     assert "我" in tag_set
     assert gran.NgTag("我", 1) in tag_set
     assert tag_set.get_offsets("我") == [1,2]
+    assert len(tag_set) == 3
+    assert tag_set.n_charac == 2
