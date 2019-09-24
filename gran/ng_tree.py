@@ -1,6 +1,7 @@
 from collections import namedtuple
 from functools import reduce
 from typing import Dict, Tuple, List, Set
+from . import utils
 
 Frequency = int
 Character = str
@@ -62,19 +63,9 @@ class NgGraph:
         
         return self.nodes[charac]
 
-    def get_word_boundary_index(self, ngram):
-        tokens = ngram.split('|')
-        token_len = [len(x) for x in tokens]
-        token_delims = [0]
-        for len_x in token_len:
-            last_delim = token_delims[-1] + len_x
-            token_delims.append(last_delim)
-        token_delims = token_delims[1:-1]
-        return token_delims
-
     def encode(self, ngram: str):
         win = self.win
-        delims = self.get_word_boundary_index(ngram)
+        delims = utils.get_word_boundary_index(ngram)
         chseq = ngram.replace('|', '')
         for base_i in range(len(chseq)):
             base_ch = chseq[base_i]
