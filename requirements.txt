@@ -1,4 +1,6 @@
 opencc-python-reimplemented
 requests
 bs4
+openpyxl
+xlrd
 

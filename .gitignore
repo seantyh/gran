@@ -1,7 +1,7 @@
 *~
 *.tmp
 *.swp
-resource/
+resources/
 data/
 
 # Byte-compiled / optimized / DLL files

@@ -14,7 +14,7 @@ def get_cache_path(name, path):
     return cache_dir.joinpath(path).resolve()
 
 def get_resource_path(name, path):
-    cache_dir = Path(__file__).parent / f"../resource/{name}"
+    cache_dir = Path(__file__).parent / f"../resources/{name}"
     return cache_dir.joinpath(path).resolve()
 
 def get_word_boundary_index(ngram):
