@@ -1,9 +1,10 @@
 from ..utils import *
 import jieba
+from .lexicon import Lexicon
 
 class Segmenter:
     def __init__(self, lexicon):
-        self.lexicon = lexicon
+        self.lexicon: Lexicon = lexicon
 
     def preprocess_matches(self, matches):
         matches = sorted(matches, key=lambda x: (x[0], -x[1]))
@@ -21,10 +22,13 @@ class Segmenter:
     def segment(self, text):
         candids = self.lexicon.find_prefixes(text)
         matches = []
-        for candid_x in candids:
-            start_idx = text.find(candid_x)
-            if start_idx < 0: continue
-            matches.append((start_idx, len(candid_x)))
+        annot_data = {}
+        for pat_x in candids:
+            candid_matches = pat_x.findall(text)
+            if candid_matches:
+                pat_text = pat_x.pattern
+                annot_data[pat_text] = self.lexicon.get_annotation(pat_text)
+            matches.extend(candid_matches)
         
         # partition the text
         matches = self.preprocess_matches(matches)
@@ -43,6 +47,6 @@ class Segmenter:
                     end_idx = len(text)
                 segments.extend(jieba.cut(text[cursor:end_idx]))
                 cursor = end_idx
-        return segments
+        return segments, annot_data
 
 

@@ -1,6 +1,8 @@
 import pandas as pd
 import pickle
 from opencc import OpenCC
+from .lex_pattern import LexPattern
+from typing import List
 
 class Lexicon:
     def __init__(self):
@@ -17,25 +19,20 @@ class Lexicon:
         if self.nword_dirty:
             self.nword_dirty = False
             self.__nword = sum(len(x) for x in self.word_list.values())
-        return self.__nword
+        return self.__nword    
         
-    def add_words(self, words, annots=None):
-        if annots:
-            assert len(words) == len(annots)
-        for idx, w in enumerate(words):
-            annot_x = annots.get(w, None)
-            self.add_word(w, annot_x)
-        
-    def add_word(self, word, annot=None):
+    def add_word(self, word, use_regex=False, annot=None):
         if not word: return
         w0 = word[0]
-        wlist_x = self.word_list.setdefault(w0, [])
-        wlist_x.append(word)
+        wlist_x = self.word_list.setdefault(w0, [])        
+        wlist_x.append(LexPattern(word, use_regex))   
+
         if annot:
-            self.annotations[word] = annot
+            self.annotations[word] = annot            
+                                
         self.nword_dirty = True
     
-    def find_prefixes(self, chars):
+    def find_prefixes(self, chars) -> List[LexPattern]:
         candids = set()
         for ch_x in chars:
             candids.update(self.word_list.get(ch_x, []))
@@ -59,7 +56,8 @@ class AnnotFrameAdaptor:
             annot_dict = row.to_dict()
             annot_dict.pop("lexical_unit")
             annot_dict.pop("index")
-            self.lexicon.add_word(row.lexical_unit, row.to_dict())
+            use_regex = annot_dict.get("form") == '3.2'
+            self.lexicon.add_word(row.lexical_unit, use_regex, row.to_dict())
 
 class PmiNgramAdaptor:
     def __init__(self, lexicon, fpath):
