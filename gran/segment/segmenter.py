@@ -72,7 +72,8 @@ class Segmenter:
             candid_matches = pat_x.findall(text)
             if candid_matches:
                 pat_text = pat_x.pattern
-                annot_data[pat_text] = self.lexicon.get_annotation(pat_text)
+                for candid_x in candid_matches:
+                    annot_data[candid_x] = self.lexicon.get_annotation(pat_text)
             matches.extend(candid_matches)
 
         # partition the text
@@ -81,6 +82,7 @@ class Segmenter:
         self.logger.debug("Best Route: " + str(route))
         segments = []
         cursor = 0
+        annot_data = {text[k[0]:(k[0]+k[1])]: v for k, v in annot_data.items() if k in route}
         while cursor < len(text):
             if matches and cursor == route[0][0]:
                 nchar = route[0][1]
@@ -94,6 +96,7 @@ class Segmenter:
                     end_idx = len(text)
                 segments.extend(jieba.cut(text[cursor:end_idx]))
                 cursor = end_idx
+                    
         return segments, annot_data
 
 

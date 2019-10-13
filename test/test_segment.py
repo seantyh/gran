@@ -8,7 +8,7 @@ def test_segment():
     seg = Segmenter(lex)    
     segs, anno_data = seg.segment("我不知道你要不知道的知道!!!!")    
     assert segs == ['我', '不知道', '你', '要', '不知道', '的', '知道', '!!!!']
-    assert anno_data == {'不知道': {}, '!+': {'form': '3.2'}}
+    assert anno_data == {'!!!!': {'form': '3.2'}, '不知道': {}}
 
 def test_segment_conflict():
     lex = Lexicon()    
@@ -16,8 +16,7 @@ def test_segment_conflict():
     lex.add_word("不知道的知道", True, {"form": "3.2"})
     lex.add_word("!+", True, {"form": "3.2"})
     seg = Segmenter(lex)
-    segs, anno_data = seg.segment("我不知道你知不知道的知道!!!!")    
-    print(segs, anno_data)
+    segs, anno_data = seg.segment("我不知道你知不知道的知道!!!!")            
     assert segs == ['我', '不', '知道', "你", "知", "不知道的知道", '!!!!']    
 
 def test_segment_conflict2():
@@ -26,8 +25,9 @@ def test_segment_conflict2():
     lex.add_word("不知道的知道", True, {"form": "3.2"})
     lex.add_word("!+", True, {"form": "3.2"})
     seg = Segmenter(lex)
-    segs, anno_data = seg.segment("我不知道你不知道的知道!!!!")    
-    print(segs, anno_data)
+    segs, anno_data = seg.segment("我不知道你不知道的知道!!!!") 
+  
+    assert anno_data == {'!!!!': {'form': '3.2'}, '不知道的知道': {'form': '3.2'}, '不知道': {'form': '3.2'}}
     assert segs == ['我', '不知道', "你", "不知道的知道", '!!!!']    
 
 def test_segment_best_route():
