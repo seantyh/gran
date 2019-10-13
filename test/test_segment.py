@@ -18,8 +18,7 @@ def test_segment_conflict():
     seg = Segmenter(lex)
     segs, anno_data = seg.segment("我不知道你知不知道的知道!!!!")    
     print(segs, anno_data)
-    assert segs == ['我', '不', '知道', "你", "知", "不知道的知道", '!!!!']
-    assert False
+    assert segs == ['我', '不', '知道', "你", "知", "不知道的知道", '!!!!']    
 
 def test_segment_conflict2():
     lex = Lexicon()    
@@ -34,6 +33,7 @@ def test_segment_conflict2():
 def test_segment_best_route():
     lex = Lexicon()    
     seg = Segmenter(lex)
-    route = seg.find_best_route([(0,2), (0,3), (2,5), (3,2)])
-    print(route)
-    assert route == [(0,2), (2,5)] 
+    route, score = seg.find_best_route([(0,2), (0,3), (2,5), (3,2), (5,4), (7,2)])    
+    assert route == [(0,2), (2,5), (7,2)] 
+    route, score = seg.find_best_route([(0,2), (0,3), (2,5), (3,2), (5,8), (7,2)])
+    assert route == [(0,3), (3,2), (5,8)] 
