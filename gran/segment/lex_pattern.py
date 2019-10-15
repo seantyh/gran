@@ -17,10 +17,13 @@ class LexPattern:
 
     def __repr__(self):
         return f"<LexPattern: {self.__pattern}>"
+        
     @property
     def literals(self):
-        if not self.__literals:
-            self.literals = LexPattern.PAT_NONLITERAL.sub(self.__pattern, "")
+        if not self.__literals:            
+            __literals = LexPattern.PAT_NONLITERAL.sub("", self.__pattern.replace("\\", "\\\\"))
+            __literals = re.sub("[?+\d{,}.*]", "", __literals)
+            self.__literals = __literals                       
         return self.__literals
 
     @property

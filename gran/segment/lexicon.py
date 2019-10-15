@@ -23,9 +23,16 @@ class Lexicon:
         
     def add_word(self, word, use_regex=False, annot=None):
         if not word: return
-        w0 = word[0]
-        wlist_x = self.word_list.setdefault(w0, [])        
-        wlist_x.append(LexPattern(word, use_regex))   
+        pat = LexPattern(word, use_regex)
+        w0 = None
+        if use_regex and pat.literals:
+            w0 = pat.literals[0]
+        else:
+            w0 = word[0]
+
+        if w0:
+            wlist_x = self.word_list.setdefault(w0, [])        
+            wlist_x.append(pat)   
 
         if annot:
             self.annotations[word] = annot            
@@ -55,8 +62,8 @@ class AnnotFrameAdaptor:
         for ridx, row in frame.iterrows():
             annot_dict = row.to_dict()
             annot_dict.pop("lexical_unit")
-            annot_dict.pop("index")
-            use_regex = annot_dict.get("form") == '3.2'
+            annot_dict.pop("index")                        
+            use_regex = annot_dict.get("form") == 3.2
             self.lexicon.add_word(row.lexical_unit, use_regex, row.to_dict())
 
 class PmiNgramAdaptor:
